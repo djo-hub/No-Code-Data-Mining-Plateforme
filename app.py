@@ -500,8 +500,6 @@ footer {
 with gr.Blocks(title="No-Code Data Mining Platform", theme=gr.themes.Soft(), css=custom_css) as app:
     gr.Markdown("""
     # 📊 No-Code Data Mining Platform
-    ### Université Abess Laghrour - Khenchela | Master 2 IA | 2025-2026
-    ---
     """)
 
     with gr.Tabs():
@@ -651,7 +649,7 @@ with gr.Blocks(title="No-Code Data Mining Platform", theme=gr.themes.Soft(), css
     gr.Markdown("---")
     gr.Markdown("""
     <div style='text-align: center; background-color: #1a1a1a; color: white; padding: 20px; border-radius: 10px; margin-top: 20px;'>
-        <h3 style='margin: 0; color: #4a90e2;'>Université Abess Laghrour - Khenchela | Master 2 IA | 2025-2026</h3>
+        <h3 style='margin: 0; color: #4a90e2;'>Université Abbas Laghrour - Khenchela | Master 2 IA | 2025-2026</h3>
         <p style='margin: 10px 0 0 0; font-size: 16px;'>👨‍💻 Developed by: <strong>Djoghlal Abid</strong></p>
     </div>
     """)

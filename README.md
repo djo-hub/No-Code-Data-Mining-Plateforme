@@ -1,6 +1,6 @@
 # 📊 No-Code Data Mining Platform
 
-No-code Data Mining and Machine Learning platform developed as part of the Master 2 Artificial Intelligence program at **Université Abess Laghrour – Khenchela**, academic year **2025–2026**.
+No-code Data Mining and Machine Learning platform developed as part of the Master 2 Artificial Intelligence program at **Université Abbas Laghrour – Khenchela**, academic year **2025–2026**.
 
 **Developer:** Djoghlal Abid
 
@@ -302,6 +302,7 @@ If you get import errors like "No module named 'data_loader'":
 ## 📧 Contact
 
 **Developer:** Djoghlal Abid 
+
 **Email:** djoghlal.abid@univ-khenchela.dz
 
 ---
