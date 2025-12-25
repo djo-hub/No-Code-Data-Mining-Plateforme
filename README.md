@@ -1,6 +1,6 @@
 # 📊 No-Code Data Mining Platform
 
-No-code Data Mining and Machine Learning platform developed as part of the Master 2 Artificial Intelligence program at **Université Abess Laghrour – Khenchela**, academic year **2025–2026**.
+No-code Data Mining and Machine Learning platform developed as part of the Master 2 Artificial Intelligence program at **Université Abbas Laghrour – Khenchela**, academic year **2025–2026**.
 
 **Developer:** Djoghlal Abid
 
