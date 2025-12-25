@@ -302,6 +302,7 @@ If you get import errors like "No module named 'data_loader'":
 ## 📧 Contact
 
 **Developer:** Djoghlal Abid 
+
 **Email:** djoghlal.abid@univ-khenchela.dz
 
 ---
