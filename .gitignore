@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDE - VS Code
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# OS
+.DS_Store
+Thumbs.db
+.directory
+
+# Gradio
+flagged/
+
+# Data files (optional - if you don't want to push test data)
+*.csv
+*.xlsx
+*.xls
+
+# Logs
+*.log
