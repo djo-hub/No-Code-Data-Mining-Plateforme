@@ -284,9 +284,52 @@ def load_data_interface(file):
         )
 
 def show_statistics():
+    """Show descriptive statistics with labeled rows and explanation"""
     if state['data'] is None:
-        return "⚠️ Please load data first"
-    return state['data'].describe()
+        return "⚠️ Please load data first", None
+
+    # Get statistics
+    stats = state['data'].describe()
+
+    # Reset index to make the statistic names a column
+    stats_with_labels = stats.reset_index()
+
+    # Rename the index column to "Statistic"
+    stats_with_labels.rename(columns={'index': 'Statistic'}, inplace=True)
+
+    # Add friendly descriptions
+    stat_descriptions = {
+        'count': 'count (Total Values)',
+        'mean': 'mean (Average)',
+        'std': 'std (Standard Deviation)',
+        'min': 'min (Minimum)',
+        '25%': '25% (Q1 - First Quartile)',
+        '50%': '50% (Median)',
+        '75%': '75% (Q3 - Third Quartile)',
+        'max': 'max (Maximum)'
+    }
+
+    # Replace statistic names with descriptions
+    stats_with_labels['Statistic'] = stats_with_labels['Statistic'].map(
+        lambda x: stat_descriptions.get(x, x)
+    )
+
+    # Explanation text
+    explanation = """📊 Statistical Summary Explanation:
+
+• count: Total number of non-missing values in each column
+• mean: Average value (sum of all values ÷ number of values)
+• std: Standard deviation - measures how spread out the data is (high = diverse, low = similar)
+• min: Minimum value (smallest value in the column)
+• 25% (Q1): First quartile - 25% of data is below this value
+• 50% (Median): Middle value - 50% above and 50% below
+• 75% (Q3): Third quartile - 75% of data is below this value
+• max: Maximum value (largest value in the column)
+
+📈 Use these statistics to understand your data distribution before training models.
+"""
+
+    return explanation, stats_with_labels
 
 def show_missing_info():
     if state['data'] is None:
@@ -410,19 +453,19 @@ def show_results():
     """Display model results with detailed information"""
     if state['model'] is None:
         return "⚠️ Please train a model first", None, None
-    
+
     model_info = state['model']
     task_type = model_info['task_type']
-    
+
     # Build detailed model information
     if task_type in ["Classification", "Regression"]:
         # For supervised learning
         features_list = ', '.join(model_info['features'])
-        
+
         # Calculate test set size percentage
         total_samples = len(model_info['X_test']) + len(model_info.get('y_train', []))
         test_percentage = (len(model_info['X_test']) / total_samples * 100) if total_samples > 0 else 0
-        
+
         info_text = f"""📊 Model Information:
 - Algorithm: {model_info['algorithm']}
 - Task Type: {task_type}
@@ -432,9 +475,9 @@ def show_results():
 - Test Set Size: {len(model_info['X_test'])} samples ({test_percentage:.1f}%)
 - Training Set Size: {len(model_info.get('y_train', []))} samples
 """
-        
+
         metrics = evaluate_model(model_info['model'], model_info['X_test'], model_info['y_test'], task_type)
-        
+
         if task_type == "Classification":
             metrics_text = f"""📈 Performance Metrics:
 - Accuracy: {metrics['accuracy']:.4f}
@@ -452,16 +495,16 @@ def show_results():
 """
             fig = plot_results(model_info['y_test'], model_info['model'].predict(model_info['X_test']), 
                              task_type, 'regression_plot')
-        
+
         return info_text, metrics_text, fig
     else:
         # For clustering
         features_list = ', '.join(model_info['features'])
-        
+
         silhouette = silhouette_score(model_info['X_scaled'], model_info['labels'])
         calinski = calinski_harabasz_score(model_info['X_scaled'], model_info['labels'])
         n_clusters = len(np.unique(model_info['labels']))
-        
+
         info_text = f"""📊 Model Information:
 - Algorithm: {model_info['algorithm']}
 - Task Type: {task_type}
@@ -470,7 +513,7 @@ def show_results():
 - Total Samples: {len(model_info['X_scaled'])}
 - Clusters Found: {n_clusters}
 """
-        
+
         metrics_text = f"""📈 Clustering Metrics:
 - Silhouette Score: {silhouette:.4f}
 - Calinski-Harabasz: {calinski:.2f}
@@ -478,9 +521,8 @@ def show_results():
 """
         fig = plot_results(model_info['X_scaled'], model_info['labels'], task_type, 
                          'clustering_plot', feature_names=model_info['features'][:2])
-        
-        return info_text, metrics_text, fig
 
+        return info_text, metrics_text, fig
 
 # =====================================================
 # BUILD GRADIO INTERFACE WITH AUTO-UPDATING DROPDOWNS
@@ -519,8 +561,9 @@ with gr.Blocks(title="No-Code Data Mining Platform", theme=gr.themes.Soft(), css
             with gr.Tabs():
                 with gr.Tab("📊 Exploration"):
                     stat_btn = gr.Button("Show Statistics", variant="primary")
+                    stat_explanation = gr.Textbox(label="What These Statistics Mean", lines=12)
                     stat_output = gr.Dataframe(label="Statistical Summary")
-                    stat_btn.click(show_statistics, outputs=[stat_output])
+                    stat_btn.click(show_statistics, outputs=[stat_explanation, stat_output])
 
                     missing_btn = gr.Button("Show Missing Values Info", variant="primary")
                     missing_output = gr.Dataframe(label="Missing Values Information")
