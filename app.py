@@ -410,19 +410,19 @@ def show_results():
     """Display model results with detailed information"""
     if state['model'] is None:
         return "⚠️ Please train a model first", None, None
-
+    
     model_info = state['model']
     task_type = model_info['task_type']
-
+    
     # Build detailed model information
     if task_type in ["Classification", "Regression"]:
         # For supervised learning
         features_list = ', '.join(model_info['features'])
-
+        
         # Calculate test set size percentage
         total_samples = len(model_info['X_test']) + len(model_info.get('y_train', []))
         test_percentage = (len(model_info['X_test']) / total_samples * 100) if total_samples > 0 else 0
-
+        
         info_text = f"""📊 Model Information:
 - Algorithm: {model_info['algorithm']}
 - Task Type: {task_type}
@@ -432,9 +432,9 @@ def show_results():
 - Test Set Size: {len(model_info['X_test'])} samples ({test_percentage:.1f}%)
 - Training Set Size: {len(model_info.get('y_train', []))} samples
 """
-
+        
         metrics = evaluate_model(model_info['model'], model_info['X_test'], model_info['y_test'], task_type)
-
+        
         if task_type == "Classification":
             metrics_text = f"""📈 Performance Metrics:
 - Accuracy: {metrics['accuracy']:.4f}
@@ -452,16 +452,16 @@ def show_results():
 """
             fig = plot_results(model_info['y_test'], model_info['model'].predict(model_info['X_test']), 
                              task_type, 'regression_plot')
-
+        
         return info_text, metrics_text, fig
     else:
         # For clustering
         features_list = ', '.join(model_info['features'])
-
+        
         silhouette = silhouette_score(model_info['X_scaled'], model_info['labels'])
         calinski = calinski_harabasz_score(model_info['X_scaled'], model_info['labels'])
         n_clusters = len(np.unique(model_info['labels']))
-
+        
         info_text = f"""📊 Model Information:
 - Algorithm: {model_info['algorithm']}
 - Task Type: {task_type}
@@ -470,7 +470,7 @@ def show_results():
 - Total Samples: {len(model_info['X_scaled'])}
 - Clusters Found: {n_clusters}
 """
-
+        
         metrics_text = f"""📈 Clustering Metrics:
 - Silhouette Score: {silhouette:.4f}
 - Calinski-Harabasz: {calinski:.2f}
@@ -478,8 +478,9 @@ def show_results():
 """
         fig = plot_results(model_info['X_scaled'], model_info['labels'], task_type, 
                          'clustering_plot', feature_names=model_info['features'][:2])
-
+        
         return info_text, metrics_text, fig
+
 
 # =====================================================
 # BUILD GRADIO INTERFACE WITH AUTO-UPDATING DROPDOWNS
