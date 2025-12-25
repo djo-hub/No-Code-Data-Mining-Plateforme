@@ -366,6 +366,7 @@ def train_supervised_model(task_type, algorithm, target, features, test_size):
             'model': model,
             'X_test': X_test,
             'y_test': y_test,
+            'y_train': y_train,
             'task_type': task_type,
             'algorithm': algorithm,
             'features': features,
@@ -406,18 +407,32 @@ def train_clustering_model(algorithm, features, n_clusters, eps, min_samples):
         return f"❌ Error: {str(e)}"
 
 def show_results():
+    """Display model results with detailed information"""
     if state['model'] is None:
         return "⚠️ Please train a model first", None, None
 
     model_info = state['model']
     task_type = model_info['task_type']
 
-    info_text = f"""📊 Model Information:
+    # Build detailed model information
+    if task_type in ["Classification", "Regression"]:
+        # For supervised learning
+        features_list = ', '.join(model_info['features'])
+
+        # Calculate test set size percentage
+        total_samples = len(model_info['X_test']) + len(model_info.get('y_train', []))
+        test_percentage = (len(model_info['X_test']) / total_samples * 100) if total_samples > 0 else 0
+
+        info_text = f"""📊 Model Information:
 - Algorithm: {model_info['algorithm']}
 - Task Type: {task_type}
+- Target Variable: {model_info['target']}
+- Features: {features_list}
+- Number of Features: {len(model_info['features'])}
+- Test Set Size: {len(model_info['X_test'])} samples ({test_percentage:.1f}%)
+- Training Set Size: {len(model_info.get('y_train', []))} samples
 """
 
-    if task_type in ["Classification", "Regression"]:
         metrics = evaluate_model(model_info['model'], model_info['X_test'], model_info['y_test'], task_type)
 
         if task_type == "Classification":
@@ -440,9 +455,21 @@ def show_results():
 
         return info_text, metrics_text, fig
     else:
+        # For clustering
+        features_list = ', '.join(model_info['features'])
+
         silhouette = silhouette_score(model_info['X_scaled'], model_info['labels'])
         calinski = calinski_harabasz_score(model_info['X_scaled'], model_info['labels'])
         n_clusters = len(np.unique(model_info['labels']))
+
+        info_text = f"""📊 Model Information:
+- Algorithm: {model_info['algorithm']}
+- Task Type: {task_type}
+- Features: {features_list}
+- Number of Features: {len(model_info['features'])}
+- Total Samples: {len(model_info['X_scaled'])}
+- Clusters Found: {n_clusters}
+"""
 
         metrics_text = f"""📈 Clustering Metrics:
 - Silhouette Score: {silhouette:.4f}
@@ -472,6 +499,7 @@ footer {
 with gr.Blocks(title="No-Code Data Mining Platform", theme=gr.themes.Soft(), css=custom_css) as app:
     gr.Markdown("""
     # 📊 No-Code Data Mining Platform
+    ### Université Abess Laghrour - Khenchela | Master 2 IA | 2025-2026
     ---
     """)
 
@@ -613,7 +641,7 @@ with gr.Blocks(title="No-Code Data Mining Platform", theme=gr.themes.Soft(), css
         with gr.Tab("📈 Results & Evaluation"):
             gr.Markdown("## Model Performance & Evaluation")
             eval_btn = gr.Button("Show Results", variant="primary", size="lg")
-            model_info_output = gr.Textbox(label="Model Information", lines=4)
+            model_info_output = gr.Textbox(label="Model Information", lines=10)
             metrics_output = gr.Textbox(label="Performance Metrics", lines=8)
             plot_output = gr.Plot(label="Visualization")
             eval_btn.click(show_results, outputs=[model_info_output, metrics_output, plot_output])
@@ -622,7 +650,7 @@ with gr.Blocks(title="No-Code Data Mining Platform", theme=gr.themes.Soft(), css
     gr.Markdown("---")
     gr.Markdown("""
     <div style='text-align: center; background-color: #1a1a1a; color: white; padding: 20px; border-radius: 10px; margin-top: 20px;'>
-        <h3 style='margin: 0; color: #4a90e2;'>Université Abbas Laghrour - Khenchela | Master 2 IA | 2025-2026</h3>
+        <h3 style='margin: 0; color: #4a90e2;'>Université Abess Laghrour - Khenchela | Master 2 IA | 2025-2026</h3>
         <p style='margin: 10px 0 0 0; font-size: 16px;'>👨‍💻 Developed by: <strong>Djoghlal Abid</strong></p>
     </div>
     """)
@@ -639,4 +667,4 @@ with gr.Blocks(title="No-Code Data Mining Platform", theme=gr.themes.Soft(), css
     )
 
 if __name__ == "__main__":
-    app.launch(share=False, server_name="127.0.0.1", server_port=7860)
+    app.launch()
